@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h3>Please Log in</h3>
+    <h1>Application Review Manager</h1>
+    {% if current_user.is_authenticated %}
+    <h3>Welcome, {{ current_user.group_name }}</h3>
+    {% else %}
+      <h3>Please Log in</h3>
+    {% endif %}
 {% endblock %}
