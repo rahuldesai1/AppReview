@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Create an Application</h1>
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.semester.label }} (ex. Fall 2020)<br>
+            {{ form.semester(size=32) }}
+            {% for error in form.semester.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.typeform_link.label }}<br>
+            {{ form.typeform_link(size=32) }}
+            {% for error in form.typeform_link.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num_apps.label }}<br>
+            {{ form.num_apps(size=32) }}
+            {% for error in form.num_apps.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.reviews_per_app.label }}<br>
+            {{ form.reviews_per_app(size=32) }}
+            {% for error in form.reviews_per_app.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}

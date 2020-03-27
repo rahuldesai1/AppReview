@@ -3,8 +3,11 @@
 {% block content %}
     <h1>Application Review Manager</h1>
     {% if current_user.is_authenticated %}
-    <h3>Welcome, {{ current_user.group_name }}</h3>
+      <h3>Welcome, {{ current_user.username }}</h3>
+      <a href="{{ url_for('groups') }}">Manage Groups</a>
+      <a href="{{ url_for('review') }}">Start Reviewing</a>
     {% else %}
-      <h3>Please Log in</h3>
+      <h3>Please Log in:</h3>
+      <a href="{{ url_for('login') }}">Login</a><br>
     {% endif %}
 {% endblock %}

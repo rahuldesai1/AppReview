@@ -5,10 +5,7 @@
     <body>
         <div>
           <a href="{{ url_for('index') }}">Home</a>
-          <a href="{{ url_for('apps') }}">Manage Applications</a>
-          {% if not current_user.is_authenticated %}
-            <a href="{{ url_for('login') }}">Admin Login</a>
-          {% else %}
+          {% if current_user.is_authenticated %}
             <a href="{{ url_for('logout') }}">Logout</a>
           {% endif %}
         </div>

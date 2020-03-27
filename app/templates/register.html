@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>Register Your Group</h1>
+    <h1>User Registration</h1>
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.group_name.label }}<br>
-            {{ form.group_name(size=32) }}<br>
-            {% for error in form.group_name.errors %}
+            {{ form.username.label}} (FirstNameLastName)<br>
+            {{ form.username(size=32) }}<br>
+            {% for error in form.username.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
