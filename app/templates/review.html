@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Review Application: {{ application_number }}<h1>
+  <a href="{{ url_for('put_back') }}"> Review a different application </a> <br>
+  <a href="{{ url_for('review_application') }}"> Review next application </a> <br>
+{% endblock %}

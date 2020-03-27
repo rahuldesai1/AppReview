@@ -1,7 +1,9 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+from threading import Lock
 from app import db
 from app import login
+from app import utils
 
 """
 There are two types of users: Admins and Reviewers. 
@@ -9,18 +11,34 @@ There are two types of users: Admins and Reviewers.
 Admins can create applications and generate the queue for reviewers
 to read from. 
 """
-
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
 
+    applications_reviewed = db.Column(db.JSON, nullable=True)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def get_group(self):
+        return self.group
+
+    def get_application(self):
+        return self.group.application
+
+    def get_reviewed_applications(self):
+        return utils.deserialize(self.applications_reviewed)
+
+    def num_reviewed(self):
+        return len(self.get_reviewed_applications())
+
+    def is_owner(self):
+        return self.group.owner_id == self.id
 
     def __repr__(self):
         return '<User: {0} (Group: {1})>'.format(self.username, self.group.group_name) 
@@ -57,8 +75,20 @@ class Application(db.Model):
     reviews_per_app = db.Column(db.Integer)
 
     # the list of applications is serialized and stored as a json list
-    application_list_serial = db.Column(db.JSON, nullable=True)
-    application_queue = []
+    application_list = db.Column(db.JSON, nullable=True)
+    application_lock = Lock()
+
+    def is_active(self):
+        return self.application_list is not None
+
+    def get_application_queue(self):
+        return utils.deserialize(self.application_list)
+
+    def acquire_lock(self):
+        self.application_lock.acquire()
+
+    def release_lock(self):
+        self.application_lock.release()
 
     def __repr__(self):
         return '<Application {}>'.format(self.semester)

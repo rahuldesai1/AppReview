@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: aecdbf8c6ea5
+Revision ID: 380923f375e2
 Revises: 
-Create Date: 2020-03-27 00:43:08.460061
+Create Date: 2020-03-27 05:55:30.999161
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'aecdbf8c6ea5'
+revision = '380923f375e2'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -23,7 +23,7 @@ def upgrade():
     sa.Column('semester', sa.String(length=64), nullable=True),
     sa.Column('num_apps', sa.Integer(), nullable=True),
     sa.Column('reviews_per_app', sa.Integer(), nullable=True),
-    sa.Column('application_list_serial', sa.JSON(), nullable=True),
+    sa.Column('application_list', sa.JSON(), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('group',
@@ -42,6 +42,7 @@ def upgrade():
     sa.Column('username', sa.String(length=64), nullable=True),
     sa.Column('password_hash', sa.String(length=128), nullable=True),
     sa.Column('group_id', sa.Integer(), nullable=True),
+    sa.Column('applications_reviewed', sa.JSON(), nullable=True),
     sa.ForeignKeyConstraint(['group_id'], ['group.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

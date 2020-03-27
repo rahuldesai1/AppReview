@@ -35,11 +35,10 @@ def login():
         return redirect(url_for('index'))
     form = LoginForm()
     if form.validate_on_submit():
-        # validate username and password
+        user = User.query.filter_by(username=form.username.data).first()
         if not user.check_password(form.password.data):
             flash('Invalid Username or Password')
             return redirect(url_for('login'))
-        #if validated, log the user in
         login_user(user, remember=form.remember_me.data)
         return redirect(url_for('index'))
     return render_template("login.html", form=form)
@@ -56,7 +55,6 @@ def logout():
 def create_group():
     form = GroupRegistrationForm()
     if form.validate_on_submit():
-        # if the current user already has an app, override it
         group = Group(
                 group_name=form.group_name.data,
                 owner_id=current_user.id
@@ -93,6 +91,9 @@ def group():
 @app.route("/group/application/create", methods=['GET', 'POST'])
 @login_required
 def create_application():
+    if not current_user.is_owner():
+        flash("You are not the owner of the group")
+        return redirect(url_for("index"))
     form = ApplicationForm()
     if form.validate_on_submit():
         # if the current user already has an app, override it
@@ -102,7 +103,7 @@ def create_application():
                 semester=form.semester.data,
                 group=current_user.group
                 )
-        current_user.group.application = app
+        current_user.get_group().application = app
         db.session.add(app)
         db.session.commit()
         return redirect(url_for('group'))
@@ -112,23 +113,37 @@ def create_application():
 @app.route("/group/application/generate", methods=['GET'])
 @login_required
 def generate_queue():
-    queue = utils.generate_queue_from_application(current_user.group.application)
-    current_user.group.application.application_queue = queue
-    current_user.group.application.application_list_serial = utils.serialize(queue)
+    if not current_user.is_owner():
+        flash("You are not the owner of the group")
+        return redirect(url_for("index"))
+    queue = utils.generate_queue_from_application(current_user.get_application())
+    current_user.get_application().application_list = utils.serialize(queue)
     db.session.commit()
     flash("Application is now open for Review")
     return redirect(url_for('index'))
 
 @app.route("/group/application/review", methods=['GET'])
 @login_required
-def review():
-    app_number = utils.get_next_application(current_user.group.application)
-    current_user.group.application_list_serial = utils.serialize(current_user.group.application.application_queue)
+def review_application():
+    if current_user.get_application() is None or not current_user.get_application().is_active():
+        flash("No open applications for your group.")
+        return redirect(url_for("index"))
+    app_number = utils.get_next_application(current_user)
+    if app_number is None:
+        flash("No more applications to review")
+        return redirect(url_for("index"))
     db.session.commit()
-    return render_template("review.html", number=app_number)
+    return render_template("review.html", application_number=app_number)
+
+@app.route("/group/application/back", methods=['GET'])
+@login_required
+def put_back():
+    utils.put_application_back(current_user)
+    db.session.commit()
+    return redirect(url_for('index'))
 
 @app.route("/group/application/queue", methods=['GET'])
 @login_required
 def application_queue():
-    q = utils.deserialize(current_user.group.application.application_list_serial)
+    q = current_user.get_application().get_application_queue()
     return render_template("queue.html", queue=q)
