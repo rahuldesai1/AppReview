@@ -14,7 +14,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
-    group_id = db.Column(db.Integer, db.ForeignKey('group.id'), unique=True)
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -33,10 +33,17 @@ def load_user(id):
 class Group(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     group_name = db.Column(db.String(64), index=True, unique=True)
+    password_hash = db.Column(db.String(128))
     owner_id = db.Column(db.Integer)
     # define model relationship
     application_id = db.Column(db.Integer, db.ForeignKey('application.id'), unique=True)
     users = db.relationship('User', backref='group', lazy='dynamic')
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return '<Group {}>'.format(self.group_name)
@@ -45,7 +52,7 @@ class Group(db.Model):
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     group = db.relationship('Group', backref='application', uselist=False)
-    semester = db.Column(db.String(64), unique=True)
+    semester = db.Column(db.String(64))
     num_apps = db.Column(db.Integer)
     reviews_per_app = db.Column(db.Integer)
 

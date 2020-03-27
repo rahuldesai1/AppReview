@@ -3,8 +3,8 @@ from flask_login import current_user, login_user, logout_user, login_required
 from app import app
 from app import utils
 from app import db
-from app.forms import LoginForm, RegistrationForm, ApplicationForm
-from app.models import User, Application
+from app.forms import LoginForm, RegistrationForm, ApplicationForm, GroupJoinForm, GroupRegistrationForm
+from app.models import User, Application, Group
 
 # Website Landing Page
 @app.route("/")
@@ -50,70 +50,85 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
-# Get a user's currently managed group
-@app.route("/groups", methods=['GET'])
-@login_required
-def groups():
-    group = current_user.group_name
-    application = current_user.application
-    return render_template("groups.html", group=group, app=application)
-
 # Create a group for the user
-@app.route("/groups/create", methods=['GET'])
+@app.route("/group/create", methods=['GET', 'POST'])
 @login_required
 def create_group():
-    group = current_user.group_name
-    application = current_user.application
-    return render_template("groups.html", group=group, app=application)
+    form = GroupRegistrationForm()
+    if form.validate_on_submit():
+        # if the current user already has an app, override it
+        group = Group(
+                group_name=form.group_name.data,
+                owner_id=current_user.id
+                )
+        group.set_password(form.password.data)
+        db.session.add(group)
+        # add the current user to the group
+        current_user.group = group
+        db.session.commit()
+        return redirect(url_for('group'))
+    return render_template("group_register.html", form=form)
 
-# Get a user's currently managed applications
-@app.route("/groups/join", methods=['GET'])
+# Allows a user to join an existing group
+@app.route("/group/join", methods=['GET', 'POST'])
 @login_required
 def join_group():
-    group = current_user.group_name
-    application = current_user.application
-    return render_template("groups.html", group=group, app=application)
+    form = GroupJoinForm()
+    if form.validate_on_submit():
+        # if the current user already has an app, override it
+        current_user.group = Group.query.filter_by(group_name=form.group_name.data).first()
+        db.session.commit()
+        return redirect(url_for('group'))
+    return render_template("group_login.html", form=form)
+
+# Get a user's currently managed group
+@app.route("/group", methods=['GET'])
+@login_required
+def group():
+    if current_user.group is None:
+        return redirect(url_for('join_group'))
+    return render_template("group.html")
 
 # create a new application
-@app.route("/applications/create", methods=['GET', 'POST'])
+@app.route("/group/application/create", methods=['GET', 'POST'])
 @login_required
 def create_application():
     form = ApplicationForm()
     if form.validate_on_submit():
         # if the current user already has an app, override it
         app = Application(
-                typeform_link=form.typeform_link.data,
                 num_apps=form.num_apps.data,
                 reviews_per_app=form.reviews_per_app.data,
                 semester=form.semester.data,
-                group=current_user
+                group=current_user.group
                 )
+        current_user.group.application = app
         db.session.add(app)
         db.session.commit()
-        return redirect(url_for('apps'))
-    return render_template("create.html", form=form)
+        return redirect(url_for('group'))
+    return render_template("create_application.html", form=form)
 
 # generate the queue and allow reviewing
-@app.route("/applications/generate", methods=['GET'])
+@app.route("/group/application/generate", methods=['GET'])
 @login_required
 def generate_queue():
-    queue = utils.generate_queue_from_application(current_user.application)
-    current_user.application.application_queue = queue
-    current_user.application.application_list_serial = utils.serialize(queue)
+    queue = utils.generate_queue_from_application(current_user.group.application)
+    current_user.group.application.application_queue = queue
+    current_user.group.application.application_list_serial = utils.serialize(queue)
     db.session.commit()
     flash("Application is now open for Review")
     return redirect(url_for('index'))
 
-@app.route("/applications/review", methods=['GET'])
+@app.route("/group/application/review", methods=['GET'])
 @login_required
 def review():
-    app_number = utils.get_next_application(current_user.application)
-    current_user.application_list_serial = utils.serialize(current_user.application.application_queue)
+    app_number = utils.get_next_application(current_user.group.application)
+    current_user.group.application_list_serial = utils.serialize(current_user.group.application.application_queue)
     db.session.commit()
     return render_template("review.html", number=app_number)
 
-@app.route("/applications/queue", methods=['GET'])
+@app.route("/group/application/queue", methods=['GET'])
 @login_required
 def application_queue():
-    q = utils.deserialize(current_user.application.application_list_serial)
+    q = utils.deserialize(current_user.group.application.application_list_serial)
     return render_template("queue.html", queue=q)

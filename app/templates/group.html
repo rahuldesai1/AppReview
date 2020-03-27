@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2> Manage Group </h2>
+    <h4> Group Name: {{ current_user.group.group_name }}</h4>
+    {% if current_user.group.application and current_user.group.owner_id == current_user.id%}
+      <a href="{{ url_for('create_application') }}">Create a new Application </a> {% if app %} (Note: This will override the existing appliaction){% endif %}    
+      <hr>
+      <div>
+        <p><b>{{ current_user.group.application.semester }}: </b> <br>
+        Number of Applications: {{ current_user.group.application.num_apps }} <br>
+        Reviews per Application: {{ current_user.group.application.reviews_per_app }} <br>
+        {% if not current_user.group.application.application_list_serial %}
+          <p>Status: Closed</p>
+          <a href="{{ url_for('generate_queue') }}"> Open for Reviewing </a> <br>
+        {% else %}
+          <p>Status: Active</p>
+          <a href="{{ url_for('application_queue') }}"> View the Queue </a> <br>
+        {% endif %}
+        </p>
+      </div>
+      <hr>
+    {% endif %}
+{% endblock %}

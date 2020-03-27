@@ -12,13 +12,6 @@
             {% endfor %}
         </p>
         <p>
-            {{ form.typeform_link.label }}<br>
-            {{ form.typeform_link(size=32) }}
-            {% for error in form.typeform_link.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
             {{ form.num_apps.label }}<br>
             {{ form.num_apps(size=32) }}
             {% for error in form.num_apps.errors %}

@@ -1,8 +1,8 @@
 """initial
 
-Revision ID: 454fd0b3c787
+Revision ID: aecdbf8c6ea5
 Revises: 
-Create Date: 2020-03-26 23:49:27.547678
+Create Date: 2020-03-27 00:43:08.460061
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '454fd0b3c787'
+revision = 'aecdbf8c6ea5'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -24,12 +24,12 @@ def upgrade():
     sa.Column('num_apps', sa.Integer(), nullable=True),
     sa.Column('reviews_per_app', sa.Integer(), nullable=True),
     sa.Column('application_list_serial', sa.JSON(), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('semester')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('group',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('group_name', sa.String(length=64), nullable=True),
+    sa.Column('password_hash', sa.String(length=128), nullable=True),
     sa.Column('owner_id', sa.Integer(), nullable=True),
     sa.Column('application_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['application_id'], ['application.id'], ),
@@ -43,8 +43,7 @@ def upgrade():
     sa.Column('password_hash', sa.String(length=128), nullable=True),
     sa.Column('group_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['group_id'], ['group.id'], ),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('group_id')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_user_username'), 'user', ['username'], unique=True)
     # ### end Alembic commands ###
