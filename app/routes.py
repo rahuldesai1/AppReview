@@ -104,6 +104,9 @@ def create_application():
                 group=current_user.group
                 )
         current_user.get_group().application = app
+        # clear the list of reviewed applications for all existing users
+        for user in current_user.get_group().users:
+            user.applications_reviewed = None
         db.session.add(app)
         db.session.commit()
         return redirect(url_for('group'))
@@ -140,10 +143,14 @@ def review_application():
 def put_back():
     utils.put_application_back(current_user)
     db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('review_application'))
 
 @app.route("/group/application/queue", methods=['GET'])
 @login_required
 def application_queue():
     q = current_user.get_application().get_application_queue()
     return render_template("queue.html", queue=q)
+
+@app.route("/instructions", methods=["GET"])
+def instructions():
+    return render_template("instructions.html")

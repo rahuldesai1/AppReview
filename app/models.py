@@ -35,6 +35,8 @@ class User(UserMixin, db.Model):
         return utils.deserialize(self.applications_reviewed)
 
     def num_reviewed(self):
+        if self.get_reviewed_applications() is None:
+            return 0
         return len(self.get_reviewed_applications())
 
     def is_owner(self):
@@ -83,6 +85,11 @@ class Application(db.Model):
 
     def get_application_queue(self):
         return utils.deserialize(self.application_list)
+
+    def get_num_remaining(self):
+        if self.application_list is None:
+            return -1 
+        return len(self.get_application_queue())
 
     def acquire_lock(self):
         self.application_lock.acquire()

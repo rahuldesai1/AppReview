@@ -1,7 +1,17 @@
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/review.css') }}">
+
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Review Application: {{ application_number }}<h1>
-  <a href="{{ url_for('put_back') }}"> Review a different application </a> <br>
-  <a href="{{ url_for('review_application') }}"> Review next application </a> <br>
+  <h1>Review Application:</h1>
+  <div id="numbox">
+    {{ application_number }}
+  </div>
+  <div id="revbutton">
+    <ul>
+      <li><a href="{{ url_for('put_back') }}"> I know this person </a></li>
+      <li><a href="{{ url_for('review_application') }}"> Review next application </a></li>
+      <li><a href="{{ url_for('index') }}"> Checkout </a></li>
+    </ul>
+  </div>
 {% endblock %}

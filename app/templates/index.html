@@ -1,11 +1,13 @@
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/index.css') }}">
+
 {% extends "base.html" %}
 
 {% block content %}
+  <div id="index">
     <h1>Application Review Manager</h1>
     {% if current_user.is_authenticated %}
       <h3>Welcome, {{ current_user.username }}</h3>
       {% if current_user.group %}
-      <a href="{{ url_for('group') }}">Manage Groups</a><br>
         <a href="{{ url_for('review_application') }}">Start Reviewing</a>
       {% else %}
         <a href="{{ url_for('join_group') }}">Create or Join a Group</a>
@@ -14,4 +16,5 @@
       <h3>Please Log in:</h3>
       <a href="{{ url_for('login') }}">Login</a><br>
     {% endif %}
+  </div>
 {% endblock %}

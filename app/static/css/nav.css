@@ -1,0 +1,39 @@
+#nav ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+
+div#nav li {
+  float: left;
+}
+
+div#nav li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+/* Change the link color to #111 (black) on hover */
+div#nav li a:hover {
+  background-color: #111;
+}
+
+div#nav {
+  margin: -10px;
+}
+
+div#errors ul{
+  padding: 25px;
+  color: #9F6000;
+  background-color: #FEEFB3;
+  list-style-type: none;
+}
+
+div#errors {
+  margin: -10px;
+}

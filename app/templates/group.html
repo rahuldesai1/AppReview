@@ -5,25 +5,29 @@
     <h4> Group Name: {{ current_user.group.group_name }}</h4>
     {% if current_user.is_owner() %}
       <a href="{{ url_for('create_application') }}">Create a new Application </a>
-    {% endif %}
     <hr>
+    {% endif %}
     {% if current_user.get_application() %}
       {% if current_user.is_owner() %}
         <div>
-          <p><b>{{ current_user.group.application.semester }}: </b> <br>
-          Number of Applications: {{ current_user.group.application.num_apps }} <br>
+          <p><b>{{ current_user.get_application().semester }}: </b> <br>
+          Total Number of Applications: {{ current_user.get_application().num_apps }} <br>
           Reviews per Application: {{ current_user.group.application.reviews_per_app }} <br>
           {% if not current_user.get_application().get_application_queue() %}
-            <p>Status: Closed</p>
+          Status: Closed <br>
             <a href="{{ url_for('generate_queue') }}"> Open for Reviewing </a> <br>
           {% else %}
-            <p>Status: Active</p>
+          Status: Active <br>
             <a href="{{ url_for('application_queue') }}"> View the Queue </a> <br>
           {% endif %}
           </p>
         </div>
       {% endif %}
-      <p> Applications Reviewed: {{ current_user.get_reviewed_applications()  }}</p>
-      <p> Total: {{ current_user.num_reviewed() }} </p>
+      <hr>
+      <p>
+      Number of Applications Remaining: {{ current_user.get_application().get_num_remaining() }} <br>
+      Applications Reviewed: {{ current_user.get_reviewed_applications()  }} <br>
+      Total: {{ current_user.num_reviewed() }}
+      </p>
     {% endif %}
 {% endblock %}

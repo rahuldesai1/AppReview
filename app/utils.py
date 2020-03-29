@@ -28,13 +28,19 @@ def get_next_application(user):
     user.get_application().acquire_lock()
     app_queue = user.get_application().get_application_queue()
     if app_queue is None or len(app_queue) == 0:
+        user.get_application().release_lock()
         return None
     apps_reviewed = user.get_reviewed_applications()
     app_number = app_queue.pop(0)
     if apps_reviewed is not None:
+        count = 0
         while app_number in apps_reviewed:
+            if count > len(apps_reviewed):
+                user.get_application().release_lock()
+                return None
             app_queue.append(app_number)
             app_number = app_queue.pop(0)
+            count += 1
     else:
         apps_reviewed = []
     apps_reviewed.append(app_number)
