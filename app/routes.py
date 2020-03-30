@@ -100,6 +100,8 @@ def create_application():
         app = Application(
                 num_apps=form.num_apps.data,
                 reviews_per_app=form.reviews_per_app.data,
+                reviews_per_user=form.num_per_user.data,
+                typeform_id=form.typeform_id.data,
                 semester=form.semester.data,
                 group=current_user.group
                 )
@@ -136,7 +138,18 @@ def review_application():
         flash("No more applications to review")
         return redirect(url_for("index"))
     db.session.commit()
-    return render_template("review.html", application_number=app_number)
+    try:
+        payload = current_user.get_application().get_app_with_id(app_number)['answers']
+        data = []
+        for resp in payload:
+            q = resp['field']['ref'].replace("-", " ").capitalize() + "?"
+            a = resp[resp['type']]
+            if type(a) == dict:
+                a = list(a.values())[0]
+            data.append((q, str(a)))
+    except IndexError:
+        data = "Unable to find that application: Please contact your group administrator"
+    return render_template("review.html", application_number=app_number, data=data)
 
 @app.route("/group/application/back", methods=['GET'])
 @login_required
@@ -154,3 +167,18 @@ def application_queue():
 @app.route("/instructions", methods=["GET"])
 def instructions():
     return render_template("instructions.html")
+
+@app.route("/group/counts", methods=["GET"])
+def reviewer_count():
+    data = []
+    for user in current_user.group.users:
+        data.append((user.username, user.num_reviewed()))
+    return render_template("count.html", data=enumerate(data))
+
+@app.route("/group/leaderboard", methods=["GET"])
+def leaderboard():
+    data = []
+    for user in current_user.group.users[:10]:
+        data.append((user.username, user.num_reviewed()))
+    data.sort(key=lambda x: x[1], reverse=True)
+    return render_template("count.html", data=enumerate(data))

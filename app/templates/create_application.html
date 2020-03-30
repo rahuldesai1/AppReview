@@ -12,6 +12,13 @@
             {% endfor %}
         </p>
         <p>
+            {{ form.typeform_id.label }}<br>
+            {{ form.typeform_id(size=32) }}
+            {% for error in form.typeform_id.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
             {{ form.num_apps.label }}<br>
             {{ form.num_apps(size=32) }}
             {% for error in form.num_apps.errors %}
@@ -22,6 +29,13 @@
             {{ form.reviews_per_app.label }}<br>
             {{ form.reviews_per_app(size=32) }}
             {% for error in form.reviews_per_app.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.num_per_user.label }}<br>
+            {{ form.num_per_user(size=32) }}
+            {% for error in form.num_per_user.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>

@@ -1,33 +1,39 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2> Manage Group </h2>
+    <h2> Profile </h2>
+    <h3> Group Details </h3>
     <h4> Group Name: {{ current_user.group.group_name }}</h4>
     {% if current_user.is_owner() %}
       <a href="{{ url_for('create_application') }}">Create a new Application </a>
-    <hr>
     {% endif %}
     {% if current_user.get_application() %}
+      <div>
+        <p><b>{{ current_user.get_application().semester }}: </b> <br>
+        Total Number of Applications: {{ current_user.get_application().num_apps }} <br>
+        Number of Applications Remaining: {{ current_user.get_application().get_num_remaining() }} <br>
+        Reviews per Application: {{ current_user.group.application.reviews_per_app }} <br>
       {% if current_user.is_owner() %}
-        <div>
-          <p><b>{{ current_user.get_application().semester }}: </b> <br>
-          Total Number of Applications: {{ current_user.get_application().num_apps }} <br>
-          Reviews per Application: {{ current_user.group.application.reviews_per_app }} <br>
           {% if not current_user.get_application().get_application_queue() %}
           Status: Closed <br>
             <a href="{{ url_for('generate_queue') }}"> Open for Reviewing </a> <br>
           {% else %}
           Status: Active <br>
             <a href="{{ url_for('application_queue') }}"> View the Queue </a> <br>
+            <a href="{{ url_for('reviewer_count') }}"> Count per Reviewer </a> <br>
           {% endif %}
           </p>
         </div>
       {% endif %}
+    {% endif %}
       <hr>
+      <h3> Individual Details </h3>
+      <h4> Username: {{ current_user.username }}</h4>
       <p>
-      Number of Applications Remaining: {{ current_user.get_application().get_num_remaining() }} <br>
+    {% if current_user.get_application() %}
+    Total Reviewed: {{ current_user.num_reviewed() }} <br>
+      Number of Applications Remaining: {{ current_user.get_num_remaining() }} <br>
       Applications Reviewed: {{ current_user.get_reviewed_applications()  }} <br>
-      Total: {{ current_user.num_reviewed() }}
       </p>
     {% endif %}
 {% endblock %}

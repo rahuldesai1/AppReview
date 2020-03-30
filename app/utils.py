@@ -1,5 +1,6 @@
 import json
 import random
+import requests
 
 """
 Generates a queue of elements for the corresponding applications. 
@@ -61,6 +62,21 @@ def put_application_back(user):
     user.get_application().application_list = serialize(app_queue)
     user.get_application().release_lock()
     return
+
+"""
+Uses Typeform Responses API to get the responses for a 
+particular form given auth code and form id. 
+
+NOTE: Will break if trying to receive more than 1000 responses. 
+"""
+def get_typeform_responses(code, form_id):
+    URL = 'https://api.typeform.com/forms/{0}/responses?page_size=1000'.format(form_id)
+    header = {"Authorization": "Bearer " + code}
+    data = []
+    response = requests.get(URL, headers=header).json()
+    data = response['items']
+    print('[DEBUG] Found %d items' % len(data))
+    return data
 
 """
 Helper Functions

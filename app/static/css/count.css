@@ -1,0 +1,42 @@
+div#leaderboard table{
+  color: white;
+  border-spacing: 0;
+  margin-top: 20px;
+}
+
+div#leaderboard tr:first-child{
+  background-color: gray;
+}
+
+div#leaderboard tr:nth-child(2) > td{
+  border-top-width: 0;
+}
+
+div#leaderboard tr{
+  background-color: #484848;
+}
+
+div#leaderboard th, td{
+  margin: 0;
+  padding: .5em 1.5em;
+  text-align: center;
+  border-width: 1px 0;
+  border-color: gray;
+  border-style: solid;
+}
+
+div#leaderboard th{
+  border-bottom-width: 1px;
+}
+
+div#leaderboard th:nth-child(even){
+  border-width: 0 4px;
+  border-color: #484848;
+  border-style: solid;
+}
+
+div#leaderboard td:nth-child(even){
+  border-width: 1px 4px;
+  border-color: gray;
+  border-style: solid;
+}

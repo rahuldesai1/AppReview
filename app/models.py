@@ -38,6 +38,11 @@ class User(UserMixin, db.Model):
         if self.get_reviewed_applications() is None:
             return 0
         return len(self.get_reviewed_applications())
+    
+    def get_num_remaining(self):
+        if self.get_application() is None:
+            return -1
+        return self.get_application().reviews_per_user - self.num_reviewed()
 
     def is_owner(self):
         return self.group.owner_id == self.id
@@ -68,6 +73,7 @@ class Group(db.Model):
     def __repr__(self):
         return '<Group {}>'.format(self.group_name)
 
+AUTH_CODE = 'HbiQ2D6qCqspi36TLvENqLSkXuwVf2Z5bXWJtDJG2xX'
 # A single semester's applications
 class Application(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -75,10 +81,14 @@ class Application(db.Model):
     semester = db.Column(db.String(64))
     num_apps = db.Column(db.Integer)
     reviews_per_app = db.Column(db.Integer)
+    reviews_per_user = db.Column(db.Integer)
 
     # the list of applications is serialized and stored as a json list
     application_list = db.Column(db.JSON, nullable=True)
     application_lock = Lock()
+
+    application_responses = None
+    typeform_id = db.Column(db.String(32))
 
     def is_active(self):
         return self.application_list is not None
@@ -90,6 +100,14 @@ class Application(db.Model):
         if self.application_list is None:
             return -1 
         return len(self.get_application_queue())
+
+    def get_application_responses(self):
+        if self.application_responses is None:
+            self.application_responses = utils.get_typeform_responses(AUTH_CODE, self.typeform_id)
+        return self.application_responses
+
+    def get_app_with_id(self, id):
+        return self.get_application_responses()[id]
 
     def acquire_lock(self):
         self.application_lock.acquire()

@@ -14,4 +14,16 @@
       <li><a href="{{ url_for('index') }}"> Checkout </a></li>
     </ul>
   </div>
+  <br>
+  {% for question, answer in data %}
+  <b>Question:</b> {{ question }}<br>
+  <b>Answer:</b>
+    {% if "http" in answer %}
+      <a href="{{ answer }}"> {{ answer }} </a>
+    {% else %}
+      {{ answer }}
+    {% endif %}
+  <br>
+  <br>
+  {% endfor %}
 {% endblock %}

@@ -1,0 +1,24 @@
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/count.css') }}">
+
+{% extends "base.html" %}
+
+{% block content %}
+  <div id="leaderboard">
+    <table>
+    <tbody>
+      <tr>
+        <th>Rank</th>
+        <th>Username</th>
+        <th>Num Reviewed</th>
+      </tr>
+      {% for count, user_data in data %}
+      <tr>
+        <td>{{ count  }}</td>
+        <td>{{ user_data[0] }}</td> 
+        <td>{{ user_data[1] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+ </div>
+{% endblock %}

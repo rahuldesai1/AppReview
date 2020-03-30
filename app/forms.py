@@ -47,8 +47,10 @@ class GroupRegistrationForm(FlaskForm):
             raise ValidationError('Please use a different username')
 
 class ApplicationForm(FlaskForm):
+    typeform_id = StringField("Typeform Form ID", validators=[DataRequired()])
     num_apps = IntegerField("Number of Applications", validators=[DataRequired(), NumberRange(min=0, max=10000, message='Number of Applications is out of range')])
     reviews_per_app = IntegerField("Reviews per Application", validators=[DataRequired()])
+    num_per_user = IntegerField("Applications per Reviewer", validators=[DataRequired()])
     semester = StringField("Semester", validators=[DataRequired()])
     submit = SubmitField("Create App")
     

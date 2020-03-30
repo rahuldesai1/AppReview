@@ -11,7 +11,8 @@
             {% if current_user.is_authenticated %}
               <li style="float:right"> <a href="{{ url_for('logout') }}">Logout</a></li>
               {% if current_user.group %}
-                <li style="float:right"> <a href="{{ url_for('group') }}">View Group</a></li>
+                <li><a href="{{ url_for('leaderboard') }}">Leaderboard</a></li>
+                <li style="float:right"> <a href="{{ url_for('group') }}">Profile</a></li>
               {% else %}
                 <li style="float:right"> <a href="{{ url_for('join_group') }}">Join Group</a></li>
               {% endif %}
