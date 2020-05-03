@@ -9,6 +9,8 @@
 `flask run`
 
 ## Deloying on Heroku
+1. push to heroku remote
+2. `heroku open` to open in browser
 
 ## Instructions for Using 
 1. Create an account and then create a new group: "mlab"
