@@ -139,7 +139,7 @@ def review_application():
         return redirect(url_for("index"))
     db.session.commit()
     try:
-        payload = current_user.get_application().get_app_with_id(app_number)['answers']
+        payload = utils.get_app_with_id(current_user.get_application(), app_number)['answers']
         data = []
         for resp in payload:
             q = resp['field']['ref'].replace("-", " ").capitalize() + "?"
@@ -148,7 +148,9 @@ def review_application():
                 a = list(a.values())[0]
             data.append((q, str(a)))
     except IndexError:
-        data = "Unable to find that application: Please contact your group administrator"
+        print("Unable to find application %d" % app_number)
+        return redirect(url_for('review_application'))
+
     return render_template("review.html", application_number=app_number, data=data)
 
 @app.route("/group/application/back", methods=['GET'])
